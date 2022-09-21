@@ -9,27 +9,26 @@ import {
   MenuItem,
   Select,
 } from "@material-ui/core";
-import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import {  useNavigate } from "react-router-dom";
 import { CartState } from "../../context/Context";
+import { UploadImage, AddBookApi } from "../../Api/Api";
 
 const AddBook = () => {
-  const [bookname, setBname] = useState();
-  const [authorname, setAuthorname] = useState();
+  const [bookname, setBname] = useState("");
+  const [authorname, setAuthorname] = useState("");
   const [price, setPrice] = useState(0);
   const [inStock, setInStock] = useState(0);
-  const [rating, setrating] = useState();
-  const [file, setfile] = useState();
+  const [rating, setrating] = useState(0);
   const [filebase64, setfiledata] = useState();
-  const [category, setCategory] = useState();
-  const { state } = useLocation();
-  // const { id } = state;
+  const [category, setCategory] = useState(1);
+
   const navigate = useNavigate();
   const {
     state: { genres },
     authState: { adminLogin, sellerLogin },
     dispatch,
   } = CartState();
+
   const uploadFile = async () => {
     var FormData = require("form-data");
     var data = new FormData();
@@ -37,25 +36,7 @@ const AddBook = () => {
     data.append("action", "upload");
     data.append("source", filebase64);
     data.append("format", "json");
-
-    var config = {
-      method: "post",
-      url: "https://freeimage.host/api/1/upload",
-      headers: {
-        "Content-Type": "application/octet-stream",
-        Authorization:
-          "Bearer CFPAT-AYCr-D5jDdrDxeS57u8YdRm57--CTmeE_tFAwoxv7do",
-      },
-      data: data,
-    };
-
-    axios(config)
-      .then(function (response) {
-        uploadBook(response.data.image.url);
-      })
-      .catch(function (error) {
-        console.log("img", error);
-      });
+    UploadImage(data, uploadBook);
   };
 
   const uploadBook = async (filePath) => {
@@ -71,26 +52,11 @@ const AddBook = () => {
         isAdmin: adminLogin,
       },
     ]);
+    AddBookApi(data, callbackafterupload);
+  };
 
-    var config = {
-      method: "post",
-      url: "https://crudapi.co.uk/api/v1/book",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer -x4lh2uQVDw6APz677MEC_c8gFZd3BnjxX5MHFUXi1_qGCA7NQ",
-      },
-      data: data,
-    };
-
-    axios(config)
-      .then(function (response) {
-        console.log("book", JSON.stringify(response.data));
-        navigate("/admin");
-      })
-      .catch(function (error) {
-        console.log("book", error);
-      });
+  const callbackafterupload = () => {
+    navigate("/admin");
   };
   const submitData = async () => {
     // console.log(bookname, authorname, price, rating, file);
@@ -106,14 +72,13 @@ const AddBook = () => {
 
   const fileOnChange = async (e) => {
     let files = e.target.files;
-    setfile(files[0]);
     const fileReader = new FileReader();
     fileReader.readAsDataURL(files[0]);
     fileReader.onload = () => {
       var base64 = fileReader.result.replace("data:image/png;base64,", "");
       base64 = base64.replace("data:image/jpg;base64,", "");
       base64 = base64.replace("data:image/jpeg;base64,", "");
-      console.log(base64);
+      //console.log(base64);
       setfiledata(base64);
     };
   };
@@ -142,7 +107,7 @@ const AddBook = () => {
                 </Grid>
                 <Grid xs={12} sm={6} item>
                   <TextField
-                    placeholder="Enter last name"
+                    placeholder="Enter author name"
                     label="author_name"
                     value={authorname}
                     onChange={(e) => setAuthorname(e.target.value)}
@@ -196,7 +161,7 @@ const AddBook = () => {
                   <TextField
                     type="file"
                     onChange={fileOnChange}
-                    placeholder="Enter rating"
+                    placeholder="Enter poster"
                     variant="outlined"
                     fullWidth
                     required
@@ -212,10 +177,16 @@ const AddBook = () => {
                     label="Age"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    data-testid="genre"
+                    // data-testid="genre"
+                    inputProps={{
+                      id: "select-id",
+                      "data-testid": "genre",
+                    }}
                   >
                     {Object.entries(genres).map(([k, v]) => (
-                      <MenuItem value={k}>{v}</MenuItem>
+                      <MenuItem value={k} key={k}>
+                        {v}
+                      </MenuItem>
                     ))}
                   </Select>
                 </Grid>

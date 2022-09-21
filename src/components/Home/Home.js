@@ -10,8 +10,8 @@ const Home = () => {
     dispatch,
   } = CartState();
 
-  const setBooks = (data) => {
-    dispatch({
+  const setBooks =  async (data) => {
+    await dispatch({
       type: "GET_BOOKS",
       payload: data,
     });

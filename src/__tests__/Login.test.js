@@ -1,9 +1,9 @@
 import React from "react";
 import { fireEvent, render, screen, userEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import Login from "./Login";
-import App from "../../App";
-import Context, { CartState, Cart } from "../../context/Context";
+import App from "../App";
+import Context from "../context/Context";
+
 import { BrowserRouter } from "react-router-dom";
 import * as router from "react-router";
 const navigate = jest.fn();

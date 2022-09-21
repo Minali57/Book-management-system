@@ -1,3 +1,6 @@
+// import { GetBooks, DeleteBook } from "../../Api/Api";
+import { DeleteBook } from "../../Api/Api";
+import GetBooks from "../../Api/Api";
 import { React, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -31,75 +34,38 @@ export default function Admin() {
     authDispatch,
   } = CartState();
 
-  useEffect(() => {
-    if (!adminLogin && !sellerLogin) {
-      navigate("/");
-    }
-    dispatch({
+  const setBooks = async (data) => {
+    await dispatch({
       type: "GET_BOOKS",
-      payload: [],
+      payload: data,
     });
-    var config = {
-      method: "get",
-      url: "https://crudapi.co.uk/api/v1/book",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer -x4lh2uQVDw6APz677MEC_c8gFZd3BnjxX5MHFUXi1_qGCA7NQ",
-      },
-    };
+  };
 
-    axios(config)
-      .then(function (response) {
-        var items = response.data.items;
-        if (sellerLogin) {
-          items = items.filter((prod) => !prod.isAdmin);
-        }
-        dispatch({
-          type: "GET_BOOKS",
-          payload: items,
-        });
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+  useEffect(() => {
+    // if (!adminLogin && !sellerLogin) {
+    //   navigate("/");
+    // }
+    setBooks([]);
+
+    async function load() {
+      await GetBooks(setBooks);
+    }
+    load();
   }, [dataFetch]);
 
   const editData = (_uuid) => {
-    navigate("/edit", { state: { id: _uuid } });
-    console.log("f");
+    navigate(`/edit/${_uuid}`);
   };
 
   const addData = () => {
     navigate("/add");
-    console.log("clicked");
   };
 
+  const callbackAfterDelete = () => {
+    setDataFetch(!dataFetch);
+  };
   const deleteData = (id) => {
-    var data = JSON.stringify([
-      {
-        _uuid: id,
-      },
-    ]);
-    var config = {
-      method: "delete",
-      url: `https://crudapi.co.uk/api/v1/book`,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer -x4lh2uQVDw6APz677MEC_c8gFZd3BnjxX5MHFUXi1_qGCA7NQ",
-      },
-      data: data,
-    };
-
-    axios(config)
-      .then(function (response) {
-        // window.location.reload();
-        setDataFetch(!dataFetch);
-      })
-      .catch(function (error) {
-        console.log("book", error);
-      });
+    DeleteBook(id, callbackAfterDelete);
   };
   const Logout = () => {
     authDispatch({
@@ -140,7 +106,7 @@ export default function Admin() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {products.map((product) => (
+            {products.map((product, i) => (
               <TableRow key={product._uuid}>
                 <TableCell component="th" scope="row">
                   {product.name}
@@ -151,8 +117,20 @@ export default function Admin() {
                 <TableCell align="right">{product.inStock}</TableCell>
                 <TableCell align="right">{product.rating}</TableCell>
                 <TableCell align="right">
-                  <DeleteIcon onClick={() => deleteData(product._uuid)} />
-                  <EditIcon onClick={() => editData(product._uuid)} />
+                  <button
+                    uuid={product._uuid}
+                    data-testid={`delete_${i}`}
+                    onClick={() => deleteData(product._uuid)}
+                  >
+                    <DeleteIcon />
+                  </button>
+                  <button
+                    uuid={product._uuid}
+                    data-testid={`edit_${i}`}
+                    onClick={() => editData(product._uuid)}
+                  >
+                    <EditIcon />
+                  </button>
                 </TableCell>
               </TableRow>
             ))}

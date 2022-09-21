@@ -10,10 +10,11 @@ import {
   Select,
   MenuItem,
 } from "@material-ui/core";
-import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { CartState } from "../../context/Context";
-const EditBook = () => {
+import { UploadImage } from "../../Api/Api";
+import { UpdateBookApi, getBookDetails } from "../../Api/Api";
+const EditBook = (props) => {
   const [bookname, setBname] = useState("");
   const [authorname, setAuthorname] = useState("");
   const [price, setPrice] = useState(0);
@@ -21,40 +22,18 @@ const EditBook = () => {
   const [rating, setrating] = useState("");
   const [file, setfile] = useState();
   const [filebase64, setfiledata] = useState();
-  const { state } = useLocation();
   const [category, setCategory] = useState();
 
-  const { id } = state;
+  // const { id } = state;
   const navigate = useNavigate();
   const {
     state: { genres, product },
     authState: { adminLogin, sellerLogin },
     dispatch,
   } = CartState();
-  const getBookData = async () => {
-    var config = {
-      method: "get",
-      url: `https://crudapi.co.uk/api/v1/book/${id}`,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer -x4lh2uQVDw6APz677MEC_c8gFZd3BnjxX5MHFUXi1_qGCA7NQ",
-      },
-    };
 
-    axios(config)
-      .then(function (response) {
-        setPrice(response.data.price);
-        setBname(response.data.name);
-        setAuthorname(response.data.author);
-        setrating(response.data.rating);
-        setCategory(response.data.category);
-        setfile(response.data.image);
-        setInStock(response.data.inStock);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+  const getBookData = async () => {
+    getBookDetails(props.id, callbackafterFetch);
   };
   const uploadFile = async () => {
     var FormData = require("form-data");
@@ -64,24 +43,17 @@ const EditBook = () => {
     data.append("source", filebase64);
     data.append("format", "json");
 
-    var config = {
-      method: "post",
-      url: "https://freeimage.host/api/1/upload",
-      headers: {
-        "Content-Type": "application/octet-stream",
-        Authorization:
-          "Bearer CFPAT-AYCr-D5jDdrDxeS57u8YdRm57--CTmeE_tFAwoxv7do",
-      },
-      data: data,
-    };
+    UploadImage(data, uploadBook);
+  };
 
-    axios(config)
-      .then(function (response) {
-        uploadBook(response.data.image.url);
-      })
-      .catch(function (error) {
-        console.log("img", error);
-      });
+  const callbackafterFetch = async (data) => {
+    setPrice(data.price);
+    setBname(data.name);
+    setAuthorname(data.author);
+    setrating(data.rating);
+    setCategory(data.category);
+    setfile(data.image);
+    setInStock(data.inStock);
   };
 
   const uploadBook = async (filePath) => {
@@ -93,7 +65,7 @@ const EditBook = () => {
           price: price,
           rating: rating,
           image: filePath,
-          _uuid: id,
+          _uuid: props.id,
           inStock: inStock,
           category: category,
         },
@@ -105,34 +77,20 @@ const EditBook = () => {
           author: authorname,
           price: price,
           rating: rating,
-          _uuid: id,
+          _uuid: props.id,
           inStock: inStock,
           category: category,
         },
       ]);
     }
 
-    var config = {
-      method: "put",
-      url: `https://crudapi.co.uk/api/v1/book`,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          "Bearer -x4lh2uQVDw6APz677MEC_c8gFZd3BnjxX5MHFUXi1_qGCA7NQ",
-      },
-      data: data,
-    };
-
-    axios(config)
-      .then(function (response) {
-        console.log("book", JSON.stringify(response.data));
-
-        navigate("/admin");
-      })
-      .catch(function (error) {
-        console.log("book", error);
-      });
+    UpdateBookApi(data, callbackafterupload);
   };
+
+  const callbackafterupload = () => {
+    navigate("/admin");
+  };
+
   const submitData = async () => {
     // console.log(bookname, authorname, price, rating, file);
     if (filebase64) {
@@ -147,6 +105,7 @@ const EditBook = () => {
     // if (!adminLogin && !sellerLogin) {
     //   navigate("/");
     // }
+    console.log("idd", props.id);
     getBookData();
   }, []);
 
@@ -182,17 +141,19 @@ const EditBook = () => {
                     variant="outlined"
                     fullWidth
                     required
+                    inputProps={{ "data-testid": "bname" }}
                   />
                 </Grid>
                 <Grid xs={12} sm={6} item>
                   <TextField
-                    placeholder="Enter last name"
+                    placeholder="Enter author name"
                     label="author_name"
                     value={authorname}
                     onChange={(e) => setAuthorname(e.target.value)}
                     variant="outlined"
                     fullWidth
                     required
+                    inputProps={{ "data-testid": "aname" }}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -205,6 +166,7 @@ const EditBook = () => {
                     variant="outlined"
                     fullWidth
                     required
+                    inputProps={{ "data-testid": "price" }}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -217,6 +179,7 @@ const EditBook = () => {
                     variant="outlined"
                     fullWidth
                     required
+                    inputProps={{ "data-testid": "stock" }}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -229,6 +192,7 @@ const EditBook = () => {
                     variant="outlined"
                     fullWidth
                     required
+                    inputProps={{ "data-testid": "rating" }}
                   />
                 </Grid>
                 {filebase64 == null && (
@@ -255,6 +219,7 @@ const EditBook = () => {
                     variant="outlined"
                     fullWidth
                     required
+                    inputProps={{ "data-testid": "poster" }}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -265,6 +230,10 @@ const EditBook = () => {
                     value={category || null}
                     label="Age"
                     onChange={(e) => setCategory(e.target.value)}
+                    inputProps={{
+                      id: "select-id",
+                      "data-testid": "genre",
+                    }}
                   >
                     {Object.entries(genres).map(([k, v]) => (
                       <MenuItem value={k}>{v}</MenuItem>
@@ -278,6 +247,7 @@ const EditBook = () => {
                     color="primary"
                     fullWidth
                     onClick={submitData}
+                    data-testid="editBook"
                   >
                     Submit
                   </Button>
@@ -288,6 +258,7 @@ const EditBook = () => {
                     color="primary"
                     fullWidth
                     onClick={() => navigate("/admin")}
+                    data-testid="cancelBook"
                   >
                     Cancel
                   </Button>
