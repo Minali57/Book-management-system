@@ -32,9 +32,6 @@ const EditBook = (props) => {
     dispatch,
   } = CartState();
 
-  const getBookData = async () => {
-    getBookDetails(props.id, callbackafterFetch);
-  };
   const uploadFile = async () => {
     var FormData = require("form-data");
     var data = new FormData();
@@ -92,7 +89,7 @@ const EditBook = (props) => {
   };
 
   const submitData = async () => {
-    // console.log(bookname, authorname, price, rating, file);
+    // //console.log(bookname, authorname, price, rating, file);
     if (filebase64) {
       await uploadFile();
     } else {
@@ -101,12 +98,17 @@ const EditBook = (props) => {
   };
 
   useEffect(() => {
-    // console.log("uu", id);
+    // //console.log("uu", id);
     // if (!adminLogin && !sellerLogin) {
     //   navigate("/");
     // }
-    console.log("idd", props.id);
-    getBookData();
+    //console.log("idd", props.id);
+
+    async function load() {
+      await getBookDetails(props.id, callbackafterFetch);
+    }
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fileOnChange = async (e) => {
@@ -117,7 +119,7 @@ const EditBook = (props) => {
       var base64 = fileReader.result.replace("data:image/png;base64,", "");
       base64 = base64.replace("data:image/jpg;base64,", "");
       base64 = base64.replace("data:image/jpeg;base64,", "");
-      console.log(base64);
+      //console.log(base64);
       setfiledata(base64);
     };
   };
@@ -236,7 +238,9 @@ const EditBook = (props) => {
                     }}
                   >
                     {Object.entries(genres).map(([k, v]) => (
-                      <MenuItem value={k}>{v}</MenuItem>
+                      <MenuItem value={k} key={k}>
+                        {v}
+                      </MenuItem>
                     ))}
                   </Select>
                 </Grid>

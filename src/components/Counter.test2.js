@@ -68,9 +68,9 @@ describe("useFeature test", () => {
   test("should return present feature toggles  with its state and dispatch function", () => {
     render(<Context />);
     const { result } = renderHook(() => CartState(), { wrapper });
-    console.log(result.all);
-    console.log(result.error);
-    console.log(result.current);
+    //console.log(result.all);
+    //console.log(result.error);
+    //console.log(result.current);
     expect(result.authState.guest).toBe(true);
   });
 });

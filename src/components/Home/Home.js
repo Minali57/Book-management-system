@@ -10,7 +10,7 @@ const Home = () => {
     dispatch,
   } = CartState();
 
-  const setBooks =  async (data) => {
+  const setBooks = async (data) => {
     await dispatch({
       type: "GET_BOOKS",
       payload: data,
@@ -56,8 +56,8 @@ const Home = () => {
     <div className="home">
       <Filters />
       <div className="productContainer">
-        {transformProducts().map((prod) => (
-          <SingleProduct prod={prod} key={prod._uuid} />
+        {transformProducts().map((prod, i) => (
+          <SingleProduct prod={prod} indx={i} key={prod._uuid} />
         ))}
       </div>
     </div>

@@ -3,15 +3,12 @@ import { fireEvent, render, screen, userEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import App from "../App";
 import Context from "../context/Context";
-
 import { BrowserRouter } from "react-router-dom";
 import * as router from "react-router";
 const navigate = jest.fn();
-
 beforeEach(() => {
   jest.spyOn(router, "useNavigate").mockImplementation(() => navigate);
 });
-
 it("Invalid Login Test", () => {
   render(
     <BrowserRouter>
@@ -20,10 +17,8 @@ it("Invalid Login Test", () => {
       </Context>
     </BrowserRouter>
   );
-
   const msg = screen.getByTestId("invalid");
   const submitBtn = screen.getByTestId("check");
-
   fireEvent.click(submitBtn);
   expect(msg).toHaveTextContent("Invalid");
 });

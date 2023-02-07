@@ -52,6 +52,11 @@ const Header = () => {
               <Dropdown.Toggle variant="success">
                 <FaShoppingCart color="white" fontSize="25px" />
                 <Badge>{cart.length}</Badge>
+                <input
+                  type="hidden"
+                  value={cart.length}
+                  data-testid="CartCount"
+                />
               </Dropdown.Toggle>
 
               <Dropdown.Menu style={{ minWidth: 370 }}>
@@ -96,7 +101,7 @@ const Header = () => {
         {guest ? (
           <Button
             variant="success"
-            style={{ float: "right", marginLeft: "-60px" }}
+            style={{ float: "right", marginLeft: "-10px" }}
             onClick={() => {
               navigate("/");
             }}
@@ -106,7 +111,7 @@ const Header = () => {
         ) : (
           <Button
             variant="success"
-            style={{ float: "right", marginLeft: "-60px" }}
+            style={{ float: "right", marginLeft: "-10px" }}
             onClick={() => {
               authDispatch({
                 type: "LOGOUT",

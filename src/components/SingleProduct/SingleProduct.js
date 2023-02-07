@@ -2,7 +2,7 @@ import { Card, Button } from "react-bootstrap";
 import { CartState } from "../../context/Context";
 import Rating from "../Rating/Rating";
 
-const SingleProduct = ({ prod }) => {
+const SingleProduct = ({ prod, indx }) => {
   const {
     state: { cart },
     dispatch,
@@ -39,6 +39,7 @@ const SingleProduct = ({ prod }) => {
                   payload: prod,
                 })
               }
+              data-testid={`remCartBtn-${indx}`}
             >
               Remove from Cart
             </Button>
@@ -51,6 +52,7 @@ const SingleProduct = ({ prod }) => {
                 })
               }
               disabled={!prod.inStock}
+              data-testid={`addCartBtn-${indx}`}
             >
               {!prod.inStock ? "Out of Stock" : "Add to Cart"}
             </Button>

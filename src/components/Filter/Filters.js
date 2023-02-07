@@ -34,6 +34,7 @@ const Filters = () => {
           label={v}
           name="genre"
           type="radio"
+          key={k}
           id={k}
           onChange={() =>
             productDispatch({

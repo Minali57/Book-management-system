@@ -35,6 +35,9 @@ export default function Admin() {
   } = CartState();
 
   const setBooks = async (data) => {
+    if (sellerLogin && data) {
+      data = data.filter((x) => x.isAdmin === false);
+    }
     await dispatch({
       type: "GET_BOOKS",
       payload: data,

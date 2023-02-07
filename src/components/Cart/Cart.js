@@ -13,7 +13,7 @@ const Cart = () => {
   const [total, setTotal] = useState();
 
   useEffect(() => {
-    console.log(cart);
+    //console.log(cart);
     setTotal(
       cart.reduce((acc, curr) => acc + Number(curr.price) * curr.qty, 0)
     );

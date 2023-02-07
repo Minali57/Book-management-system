@@ -9,7 +9,7 @@ import {
   MenuItem,
   Select,
 } from "@material-ui/core";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { CartState } from "../../context/Context";
 import { UploadImage, AddBookApi } from "../../Api/Api";
 
@@ -59,12 +59,12 @@ const AddBook = () => {
     navigate("/admin");
   };
   const submitData = async () => {
-    // console.log(bookname, authorname, price, rating, file);
+    // //console.log(bookname, authorname, price, rating, file);
     await uploadFile();
   };
 
   useEffect(() => {
-    // console.log("uuid", id);
+    // //console.log("uuid", id);
     // if (!adminLogin && !sellerLogin) {
     //   navigate("/");
     // }
@@ -78,7 +78,7 @@ const AddBook = () => {
       var base64 = fileReader.result.replace("data:image/png;base64,", "");
       base64 = base64.replace("data:image/jpg;base64,", "");
       base64 = base64.replace("data:image/jpeg;base64,", "");
-      //console.log(base64);
+      ////console.log(base64);
       setfiledata(base64);
     };
   };
